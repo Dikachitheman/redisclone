@@ -99,11 +99,13 @@ func echo(conn net.Conn, message string) {
 
 func errorFunc(conn net.Conn) {
 
-	response := fmt.Sprintf("error")
+	response := fmt.Sprintf("error message")
 	conn.Write([]byte(response))
 }
 
 func handleRequest(conn net.Conn) {
+
+	defer conn.Close()
 
 	buffer := make([]byte, 1024)
 	respMap := make(map[int]string)
@@ -112,6 +114,7 @@ func handleRequest(conn net.Conn) {
 
 		"ECHO":  echo,
 		"error": errorFunc,
+
 	}
 
 	for {
@@ -139,6 +142,8 @@ func handleRequest(conn net.Conn) {
 			if index == "error" {
 				value.(func(net.Conn))(conn)
 			}
+
+			continue
 
 		}
 
