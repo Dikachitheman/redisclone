@@ -12,32 +12,6 @@ import (
 	"strings"
 )
 
-func main() {
-	// You can use print statements as follows for debugging, they'll be visible when running tests.
-	fmt.Println("Logs from your program will appear here!")
-
-	// Uncomment this block to pass the first stage
-
-	l, err := net.Listen("tcp", "0.0.0.0:6379")
-	if err != nil {
-		fmt.Println("Failed to bind to port 6379")
-		os.Exit(1)
-	} else {
-		fmt.Println("listening...")
-	}
-
-	defer l.Close()
-
-	for {
-		conn, err := l.Accept()
-		if err != nil {
-			fmt.Println("Error accepting connection: ", err.Error())
-			os.Exit(1)
-		}
-
-		go handleRequest(conn)
-	}
-}
 
 func mapRespCommand(buffer []byte) map[int]string {
 
@@ -129,27 +103,27 @@ func handleRequest(conn net.Conn) {
 			log.Fatal(err)
 		}
 
-		fmt.Println("\nreceived", string(buffer[:n]))
+		if n != 0 {
+			fmt.Println("\nreceived", string(buffer[:n]))
 
-		respMap = mapRespCommand(buffer[:n])
+			respMap = mapRespCommand(buffer[:n])
 
-		for index, value := range commandMap {
+			for index, value := range commandMap {
 
-			if respMap[0] == index {
-				value.(func(net.Conn, string))(conn, respMap[1])
-			}
+				if respMap[0] == index {
+					value.(func(net.Conn, string))(conn, respMap[1])
+				}
 
-			if index == "error" {
-				value.(func(net.Conn))(conn)
-			}
+				if index == "error" {
+					value.(func(net.Conn))(conn)
+				}
 
-			continue
-
+			}	
 		}
 
+		fmt.Println("go: ", goid())
 	}
 
-	fmt.Println("go: ", goid())
 }
 
 func goid() int {
@@ -174,4 +148,32 @@ func goid() int {
 
 	return id
 
+}
+
+
+func main() {
+	// You can use print statements as follows for debugging, they'll be visible when running tests.
+	fmt.Println("Logs from your program will appear here!")
+
+	// Uncomment this block to pass the first stage
+
+	l, err := net.Listen("tcp", "0.0.0.0:6379")
+	if err != nil {
+		fmt.Println("Failed to bind to port 6379")
+		os.Exit(1)
+	} else {
+		fmt.Println("listening...")
+	}
+
+	defer l.Close()
+
+	for {
+		conn, err := l.Accept()
+		if err != nil {
+			fmt.Println("Error accepting connection: ", err.Error())
+			os.Exit(1)
+		}
+
+		go handleRequest(conn)
+	}
 }

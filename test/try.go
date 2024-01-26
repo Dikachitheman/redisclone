@@ -68,10 +68,13 @@ func decodeArray(r *bufio.Reader) ([]string, error) {
 	}
 	return cmds, nil
 }
+
 type input struct {
 	raw  []byte
 	cmds []string
 }
+
+
 func (i *input) parse() {
 	r := bufio.NewReader(bytes.NewReader(i.raw))
 	b, err := r.ReadByte()
