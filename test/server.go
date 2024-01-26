@@ -1,9 +1,9 @@
 package main
 
 import (
-	"errors"
+	// "errors"
 	"fmt"
-	"io"
+	// "io"
 	"log"
 	"net"
 	"os"
@@ -91,13 +91,13 @@ func handleRequest(conn net.Conn) {
 
 	}
 
-	for {
+	// for {
 
 		n, err := conn.Read(buffer)
 
-		if errors.Is(err, io.EOF) {
-			break
-		}
+		// if errors.Is(err, io.EOF) {
+		// 	break
+		// }
 
 		if err != nil {
 			log.Fatal(err)
@@ -122,7 +122,7 @@ func handleRequest(conn net.Conn) {
 		}
 
 		fmt.Println("go: ", goid())
-	}
+	// }
 
 }
 
