@@ -29,7 +29,14 @@ func main() {
 			fmt.Println("Dial failed:", err.Error())
 			os.Exit(1)
 		}
-		_, err = conn.Write([]byte("*2\r\n$4\r\nECHO\r\n$3\r\nhey\r\n"))
+		// _, err = conn.Write([]byte("*2\r\n$4\r\nECHO\r\n$3\r\nhey\r\n"))
+
+		// _, err = conn.Write([]byte("*3\r\n$3\r\nSET\r\n$3\r\nhey\r\n$5\r\nhello\r\n"))
+		// _, err = conn.Write([]byte("*3\r\n$3\r\nSET\r\n$3\r\nher\r\n$5\r\nhello\r\n"))
+
+		_, err = conn.Write([]byte("*2\r\n$3\r\nGET\r\n$3\r\nhey\r\n"))
+		// _, err = conn.Write([]byte("*2\r\n$3\r\nGET\r\n$3\r\nher\r\n"))
+
 		
 		if err != nil {
 			fmt.Println("write data failed: ", err.Error())
@@ -50,5 +57,6 @@ func main() {
 		conn.Close()
 
 		time.Sleep(2 * time.Second)
+
 	}
 }

@@ -71,6 +71,28 @@ func echo(conn net.Conn, message string) {
 
 }
 
+var setMap = make(map[string]string)
+
+func set(conn net.Conn, key string, value string) {
+
+	setMap[key] = value
+
+	fmt.Println(setMap)
+
+	conn.Write([]byte("OK"))
+
+}
+
+func get(conn net.Conn, key string) {
+
+	resp := setMap[key]
+
+	response := []byte(resp)
+
+	conn.Write([]byte(response))
+
+}
+
 func errorFunc(conn net.Conn) {
 
 	response := fmt.Sprintf("error message")
@@ -87,6 +109,8 @@ func handleRequest(conn net.Conn) {
 	commandMap := map[string]interface{}{
 
 		"ECHO":  echo,
+		"SET": set,
+		"GET": get,
 		"error": errorFunc,
 
 	}
@@ -110,12 +134,16 @@ func handleRequest(conn net.Conn) {
 
 			for index, value := range commandMap {
 
-				if respMap[0] == index {
-					value.(func(net.Conn, string))(conn, respMap[1])
-				}
-
 				if index == "error" {
 					value.(func(net.Conn))(conn)
+				}
+
+				if respMap[0] == "SET" && respMap[0] == index{
+
+					value.(func(net.Conn, string, string))(conn, respMap[1], respMap[2])
+
+				} else if respMap[0] == index {
+					value.(func(net.Conn, string))(conn, respMap[1])
 				}
 
 			}	
